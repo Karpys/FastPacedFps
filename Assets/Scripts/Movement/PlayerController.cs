@@ -7,6 +7,8 @@
     {
         [SerializeField] private Transform m_Forward = null;
         [SerializeField] private float m_Acceleration = 0;
+        [SerializeField] private float m_Deceleration = 0;
+        [SerializeField] private float m_StopTreshold = 0;
         [SerializeField] private float m_MaxSpeed = 0;
 
         [Header("Drag")] 
@@ -59,12 +61,23 @@
                     m_HorizontalVelocity = m_HorizontalVelocity.normalized * m_MaxSpeed;
                 }
             }
-            else
+            else if(m_HorizontalVelocity != Vector3.zero)
             {
+                Vector3 inverse = -m_HorizontalVelocity;
+                m_HorizontalVelocity += inverse.normalized * (m_Deceleration * Time.deltaTime);
+                StopCheck();
                 //Decelerate
             }
         }
-        
+
+        private void StopCheck()
+        {
+            if (m_HorizontalVelocity.magnitude <= m_StopTreshold)
+            {
+                m_HorizontalVelocity = Vector3.zero;
+            }
+        }
+
         private void JumpCheck()
         {
             if (m_IsGrounded && m_RequestJump)

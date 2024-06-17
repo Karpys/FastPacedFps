@@ -771,6 +771,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Forward: {fileID: 892371627}
   m_Acceleration: 50
+  m_Deceleration: 50
+  m_StopTreshold: 0.1
   m_MaxSpeed: 10
   m_StartGroundCheck: {fileID: 1852570276}
   m_GroundCheckHeight: 0.5
