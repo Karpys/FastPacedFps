@@ -1,5 +1,6 @@
 ﻿namespace KarpysDev.Fps.Movement
 {
+    using System;
     using KarpysUtils;
     using UnityEngine;
 
@@ -17,34 +18,51 @@
         [SerializeField] private LayerMask m_GroundMask;
 
         [Header("Jump")] 
+        [SerializeField] private float m_InputTimeDelay = 0;
         [SerializeField] private float m_JumpForce = 0;
+        [SerializeField] private float m_Gravity = 0;
         
         private Vector2 m_Input = Vector2.zero;
         private bool m_IsGrounded = false;
-        private bool m_RequestJump = false;
         private Vector3 m_HorizontalVelocity = Vector3.zero;
+        private float m_VerticalVelocity = 0;
+        
+        //Clock//
+        private Timer m_JumpRequestTimer = null;
+        
+        private bool CanJump => m_IsGrounded && !m_JumpRequestTimer.IsDone && m_VerticalVelocity <= 0;
+
+        private void Awake()
+        {
+            m_JumpRequestTimer = new Timer(m_InputTimeDelay);
+        }
+
         private void Update()
         {
+            m_JumpRequestTimer.Update();
             PlayerInput();
 
             m_IsGrounded = Physics.Raycast(m_StartGroundCheck.position, Vector3.down, m_GroundCheckHeight, m_GroundMask);
            
             HorizontalMovement();
+            VerticalMovement();
             JumpCheck();
 
-            Vector3 horizontalVelocity = new Vector3(m_HorizontalVelocity.x, 0, m_HorizontalVelocity.z); 
-            horizontalVelocity.magnitude.Log("Horizontal Velocity");
-            transform.position += horizontalVelocity * Time.deltaTime;
+            Vector3 velocity = new Vector3(m_HorizontalVelocity.x, 0, m_HorizontalVelocity.z); 
+            velocity.magnitude.Log("Horizontal Velocity");
+            velocity.y = m_VerticalVelocity;
+            velocity.y.Log("Vertical Velocity");
+            transform.position += velocity * Time.deltaTime;
         }
 
         private void PlayerInput()
         {
             m_Input.x = Input.GetAxisRaw("Horizontal");
             m_Input.y = Input.GetAxisRaw("Vertical");
-            
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                m_RequestJump = true;
+                m_JumpRequestTimer.Launch();
             }
         }
         
@@ -66,7 +84,19 @@
                 Vector3 inverse = -m_HorizontalVelocity;
                 m_HorizontalVelocity += inverse.normalized * (m_Deceleration * Time.deltaTime);
                 StopCheck();
-                //Decelerate
+            }
+        }
+        
+        private void VerticalMovement()
+        {
+            JumpCheck();
+            if (m_IsGrounded && m_VerticalVelocity <= 0)
+            {
+                m_VerticalVelocity = 0;
+            }
+            else
+            {
+                m_VerticalVelocity -= m_Gravity * Time.deltaTime;
             }
         }
 
@@ -80,15 +110,16 @@
 
         private void JumpCheck()
         {
-            if (m_IsGrounded && m_RequestJump)
+            if (CanJump)
             {
+                m_JumpRequestTimer.Clear();
                 Jump();
             }
         }
         
         private void Jump()
         {
-           
+            m_VerticalVelocity = m_JumpForce;
         }
     }
 }
