@@ -6,6 +6,7 @@
 
     public class PlayerController : MonoBehaviour
     {
+        [SerializeField] private Rigidbody m_Rigidbody = null;
         [SerializeField] private Transform m_Forward = null;
         [SerializeField] private float m_Acceleration = 0;
         [SerializeField] private float m_Deceleration = 0;
@@ -52,7 +53,7 @@
             velocity.magnitude.Log("Horizontal Velocity");
             velocity.y = m_VerticalVelocity;
             velocity.y.Log("Vertical Velocity");
-            transform.position += velocity * Time.deltaTime;
+            m_Rigidbody.velocity = velocity;
         }
 
         private void PlayerInput()
