@@ -1,4 +1,6 @@
-﻿namespace KarpysDev.Fps.Shoot
+﻿using KarpysDev.Fps.Bullet;
+
+namespace KarpysDev.Fps.Shoot
 {
     using UnityEngine;
 
@@ -6,7 +8,7 @@
     {
         [SerializeField] private Camera m_AimCamera = null;
         [SerializeField] private Transform m_SpawnPoint = null;
-        [SerializeField] private Rigidbody m_BulletPrefab = null;
+        [SerializeField] private BaseBullet m_BulletPrefab = null;
         [SerializeField] private float m_BulletForce = 0;
 
         private void Update()
@@ -23,9 +25,8 @@
             Vector3 spawnPosition = m_SpawnPoint.position;
             Vector3 direction = hitPoint - spawnPosition;
 
-            Rigidbody bullet = Instantiate(m_BulletPrefab, spawnPosition, Quaternion.identity);
-            bullet.transform.forward = direction.normalized;
-            bullet.AddForce(direction.normalized * m_BulletForce,ForceMode.Impulse);
+            BaseBullet bullet = Instantiate(m_BulletPrefab, spawnPosition, Quaternion.identity);
+            bullet.ShootInDirection(direction.normalized, m_BulletForce);
         }
 
         private Vector3 GetHitPoint()

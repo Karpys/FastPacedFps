@@ -50,9 +50,9 @@
             JumpCheck();
 
             Vector3 velocity = new Vector3(m_HorizontalVelocity.x, 0, m_HorizontalVelocity.z); 
-            velocity.magnitude.Log("Horizontal Velocity");
+            //velocity.magnitude.Log("Horizontal Velocity");
             velocity.y = m_VerticalVelocity;
-            velocity.y.Log("Vertical Velocity");
+            //velocity.y.Log("Vertical Velocity");
             m_Rigidbody.velocity = velocity;
         }
 
